@@ -130,9 +130,21 @@ private:
             return false;  
     }
 
-    //busqueda en cuckoo
-        //codigo
-    
+    //funcionalidad para busqueda interna, si existe el DNI, devuelve la tabla y la posicion
+    bool buscarEnIndice(uint32_t dni, int& tabla_encontrada, size_t& pos_encontrada) {
+        for (int i = 0; i < NUM_TABLAS; i++) {
+            size_t pos = hash_function(dni, i);
+            
+            if (tablas[i][pos].ocupado && tablas[i][pos].dni == dni) {
+                tabla_encontrada = i;
+                pos_encontrada = pos;
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     //funcionalidad interna de insercion con cuckoo
     bool insertarEnCuckoo(const ElementoIndice& nuevo_indice) {
         static int tabla_inicial = 0;
