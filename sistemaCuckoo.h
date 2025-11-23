@@ -211,8 +211,67 @@ private:
     //funcion para validar factor de carga
         //codigo
 
-    //funcion para buscar con dni
-        //codigo
+
+//funcionalidad para busqueda por DNI
+    void buscar() {
+        cout << "\n     BUSCAR PERSONA POR DNI\n";
+        
+        uint32_t dni;
+        cout << "Ingrese DNI (8 digitos): ";
+        cin >> dni;
+        
+        if (!validarDNI(dni)) {
+            cout << " ERROR: DNI invalido. Debe tener 8 digitos (10000000-99999999)\n";
+            return;
+        }
+        
+        auto inicio = chrono::high_resolution_clock::now();
+        
+        int tabla_encontrada; //numero de la tabla
+        size_t pos_encontrada; //posicion donde se encuentra el DNI
+        
+        if (!buscarEnIndice(dni, tabla_encontrada, pos_encontrada)) {
+            cout << " DNI no encontrado en el sistema\n";
+            return;
+        }
+        
+        //En caso exista el DNI lee del disco
+        uint64_t offset = tablas[tabla_encontrada][pos_encontrada].offset;
+        Persona persona;
+        
+        archivoData.seekg(offset, ios::beg);
+        archivoData.read(reinterpret_cast<char*>(&persona), sizeof(Persona));
+        
+        auto fin = chrono::high_resolution_clock::now();
+        auto duracion = chrono::duration_cast<chrono::microseconds>(fin - inicio).count();
+        
+        //muestra toda la data de la persona
+        cout << "-----------------------------------\n";
+        if (!persona.activo) {
+            cout << "  ESTADO: *** DIFUNTO ***\n";
+        } else {
+            cout << "  REGISTRO ENCONTRADO\n";
+        }
+        cout << "------------------------------------\n";
+        cout << "DNI:                 " << persona.dni << "\n";
+        cout << "Nombres:             " << persona.nombres << "\n";
+        cout << "Apellidos:           " << persona.apellidos << "\n";
+        cout << "Nacionalidad:        Peruana"<< "\n";
+        cout << "Lugar de Nacimiento: Peru"<< "\n";
+        cout << "Departamento:        " << persona.departamento << "\n";
+        cout << "Provincia:           " << persona.provincia << "\n";
+        cout << "Ciudad:              " << persona.ciudad << "\n";
+        cout << "Distrito:            " << persona.distrito << "\n";
+        cout << "Ubicacion:           " << persona.ubicacion << "\n";
+        cout << "Telefono:            " << persona.telefono << "\n";
+        cout << "Email:               " << persona.email << "\n";
+        cout << "Estado civil:        " << persona.estado_civil << "\n";
+        cout << "Estado:              " << (persona.activo ? "ACTIVO" : "DIFUNTO") << "\n";
+        cout << "------------------------------------\n";
+        cout << "Ubicacion: Tabla " << (tabla_encontrada + 1) << ", Posicion " << pos_encontrada << "\n";
+        cout << "Tiempo de busqueda: " << duracion << " microsegundos\n";
+        cout << "------------------------------------\n";    
+    }
 
 
     //funcionalidad para insertar nuevo registro de persona
