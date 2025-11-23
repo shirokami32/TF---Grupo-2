@@ -391,8 +391,61 @@ private:
         MAX_INTENTOS = 500; //se restaura
     } 
 
-    //funcion para eliminar con dni
-        //codigo
+//funcionalidad para eliminar persona por DNI
+    void eliminar() {
+        cout << "\n     ELIMINAR PERSONA (MARCAR COMO DIFUNTO)\n";
+        
+        uint32_t dni;
+        cout << "Ingrese DNI a eliminar: ";
+        cin >> dni;
+        
+        if (!validarDNI(dni)) {
+            cout << " ERROR: DNI invalido\n";
+            return;
+        }
+        
+        int tabla_encontrada;
+        size_t pos_encontrada;
+        
+        if (!buscarEnIndice(dni, tabla_encontrada, pos_encontrada)) {
+            cout << " ERROR: DNI no encontrado en el sistema\n";
+            return;
+        }
+        
+        //lee el registro existente
+        uint64_t offset = tablas[tabla_encontrada][pos_encontrada].offset;
+        Persona persona;
+        
+        archivoData.seekg(offset, ios::beg);
+        archivoData.read(reinterpret_cast<char*>(&persona), sizeof(Persona));
+        
+        if (!persona.activo) {
+            cout << " ADVERTENCIA: Esta persona ya esta marcada como DIFUNTO\n";
+            return;
+        }
+        
+        //confirmar
+        cout << "\nDatos de la persona a eliminar:\n";
+        cout << "  DNI: " << persona.dni << "\n";
+        cout << "  Nombre: " << persona.nombres << " " << persona.apellidos << "\n";
+        cout << "\nEsta seguro de marcar como DIFUNTO? (S/N): ";
+        
+        char confirmacion;
+        cin >> confirmacion;
+        
+        if (confirmacion != 'S' && confirmacion != 's') {
+            cout << "Operacion cancelada\n";
+            return;
+        }
+        
+        //marcar como inactivo en disco
+        archivoData.seekp(offset + offsetof(Persona, activo), ios::beg);
+        bool inactivo = false;
+        archivoData.write(reinterpret_cast<const char*>(&inactivo), sizeof(bool));
+        archivoData.flush();
+        
+        cout << "\n Persona marcada como DIFUNTO exitosamente\n";
+    }
 
     //funcion de mostrar menu
         //codigo
