@@ -448,6 +448,51 @@ private:
     }
 
     //funcion de mostrar menu
-        //codigo
-
-}
+            //menu principal
+    void ejecutar() {
+        int opcion;
+        
+        do {
+            cout << "\n";
+            cout << "___________________________________________\n";
+            cout << "    SISTEMA DE GESTION CUCKOO HASH \n";
+            cout << "___________________________________________\n";
+            cout << "  1. Buscar persona por DNI\n";
+            cout << "  2. Insertar nueva persona\n";
+            cout << "  3. Eliminar persona (marcar difunto)\n";
+            cout << "  4. Guardar cambios\n";
+            cout << "  5. Salir \n";
+            cout << "___________________________________________\n";
+            cout << "Seleccione una opcion: ";
+            cin >> opcion;
+            cin.ignore();
+            
+            switch(opcion) {
+                case 1:
+                    buscar();
+                    break;
+                case 2:
+                    insertar();
+                    break;
+                case 3:
+                    eliminar();
+                    break;
+                case 4:
+                    guardarIndice();
+                    break;
+                case 5:
+                    cout << "\nDesea guardar los cambios antes de salir? (S/N): ";
+                    char resp;
+                    cin >> resp;
+                    if (resp == 'S' || resp == 's') {
+                        guardarIndice();
+                    }
+                    cout << "\nGracias por usar el sistema. Hasta luego!\n";
+                    break;
+                default:
+                    cout << " Opcion invalida\n";
+            }
+            
+        } while(opcion != 5);
+    }
+};
